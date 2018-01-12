@@ -1,38 +1,49 @@
-Role Name
-=========
+#Ansible Role to Install LXC 2 on Centos and Build LXC Containers
 
-A brief description of the role goes here.
+This role will allow you to install LXC 2 on Centos 7 and then build a series of containers that you have listed in your inventory file.
 
-Requirements
-------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+##Role Variables
 
-Role Variables
---------------
+This role does not have any variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The list of containers to build is taken directly from your inventory, by looping over all hosts in the group `lxc`
 
-Dependencies
-------------
+##Dependencies
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role uses COPR to install modern LXC on Centos 7 and so has a dependency on https://galaxy.ansible.com/edmondscommerce/copr-repository/
 
-Example Playbook
-----------------
+##Example Inventory
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```
+[web]
+cnt-web-1
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+[db]
+cnt-db-1
+                                                                                                                                                                                                                   
+[lxc]
+cnt-web-1
+cnt-db-1
+```
 
-License
--------
+##Example Playbook
 
-BSD
+```
+- name: install lxc and create lxc containers
+  hosts: localhost
+  become: true
+  roles:
+      - lxc-create
+```
 
-Author Information
-------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+##License
+
+Apache
+
+##Author Information
+
+[Edmonds Commerce](https://www.edmondscommerce.co.uk) are a UK based PHP development agency specialising in E-Commerce and Magento.
+
+https://www.edmondscommerce.co.uk
