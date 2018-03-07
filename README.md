@@ -1,4 +1,5 @@
 # Ansible Role to Install LXC 2 on Centos and Build LXC Containers
+## By [Edmonds Commerce](https://www.edmondscommerce.co.uk)
 
 This role will allow you to install LXC 2 on Centos 7 and then build a series of containers that you have listed in your inventory file.
 
