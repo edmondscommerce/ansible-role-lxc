@@ -1,0 +1,53 @@
+- name: update everything
+  package:
+    name: '*'
+    state: latest
+
+- name: install required packages
+  package:
+    name: 
+      - epel-release
+      - wget
+    state: latest
+
+- name: add copr repo for lxc 
+  include_role:
+    name: edmondscommerce.copr
+  vars:
+    copr_repository_action: install
+    #copr_repository: thm/lxc2.0
+    copr_repository: ganto/lxc3
+
+- name: install lxc
+  package:
+    name:
+      - python2-lxc
+      - lxc
+      - lxc-templates
+      - libvirt
+    state: latest
+
+- name: enable lxc and libvirt on systemd
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - lxc
+    - libvirtd
+
+- name: configure lxc defaults
+  template:
+    src: default.conf
+    dest: /etc/lxc/default.conf
+
+- name: create LXC containers in inventory
+  lxc_container:
+    name: "{{ item }}"
+    template: download
+    state: started
+    backing_store: dir
+    fs_size: 4G
+    template_options: --dist centos --release 7 --arch amd64
+  with_items: "{{ groups['lxc'] }}"
+
