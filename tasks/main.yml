@@ -12,11 +12,11 @@
 
 - name: add copr repo for lxc 
   include_role:
-    name: edmondscommerce.copr
+    name: edmondscommerce.copr-repository
   vars:
     copr_repository_action: install
-    #copr_repository: thm/lxc2.0
-    copr_repository: ganto/lxc3
+    copr_repository: thm/lxc2.0
+    #copr_repository: ganto/lxc3
 
 - name: install lxc
   package:
@@ -49,5 +49,18 @@
     backing_store: dir
     fs_size: 4G
     template_options: --dist centos --release 7 --arch amd64
+
   with_items: "{{ groups['lxc'] }}"
+
+- name: set up some bash completion - ensure package is installed
+  package:
+    name:
+      - bash-completion
+    state: latest
+- name: set up some bash completion - copy template in
+  template:
+      src: lxcBashCompletion.inc.bash
+      dest: /etc/bash_completion.d/lxcBashCompletion.inc.bash
+
+
 
