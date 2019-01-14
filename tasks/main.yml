@@ -5,12 +5,12 @@
 
 - name: install required packages
   package:
-    name: 
+    name:
       - epel-release
       - wget
     state: latest
 
-- name: add copr repo for lxc 
+- name: add copr repo for lxc
   include_role:
     name: edmondscommerce.copr-repository
   vars:
@@ -41,6 +41,23 @@
     src: default.conf
     dest: /etc/lxc/default.conf
 
+- name: install squid for yum caching
+  package:
+    name: squid
+    state: present
+
+- name: set up squid filesystem cache
+  shell: >
+    echo "cache_dir ufs /var/spool/squid 7000 16 256" >> /etc/squid/squid.conf;
+  args:
+    executable: /bin/bash
+
+- name: start and enable squid
+  systemd:
+    name: squid
+    state: started
+    enabled: yes
+
 - name: create LXC containers in inventory
   lxc_container:
     name: "{{ item }}"
@@ -49,6 +66,12 @@
     backing_store: dir
     fs_size: 4G
     template_options: --dist centos --release 7 --arch amd64
+    #configuring yum to use the squid proxy on the container host
+    container_command: |
+      proxyIp="$(ip r | grep default | cut -d ' ' -f 3)";
+      echo "proxy=http://$proxyIp:3128" >> /etc/yum.conf;
+      sed -i 's/mirror/#mirror/g' /etc/yum.repos.d/CentOS-Base.repo
+      sed -i 's/#base/base/g' /etc/yum.repos.d/CentOS-Base.repo
 
   with_items: "{{ groups['lxc'] }}"
 
@@ -59,8 +82,8 @@
     state: latest
 - name: set up some bash completion - copy template in
   template:
-      src: lxcBashCompletion.inc.bash
-      dest: /etc/bash_completion.d/lxcBashCompletion.inc.bash
+    src: lxcBashCompletion.inc.bash
+    dest: /etc/bash_completion.d/lxcBashCompletion.inc.bash
 
 
 
