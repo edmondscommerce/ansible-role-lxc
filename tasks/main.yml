@@ -1,14 +1,9 @@
-- name: update everything
-  package:
-    name: '*'
-    state: latest
-
 - name: install required packages
   package:
     name:
       - epel-release
       - wget
-    state: latest
+    state: present
 
 - name: add copr repo for lxc
   include_role:
@@ -25,7 +20,7 @@
       - lxc
       - lxc-templates
       - libvirt
-    state: latest
+    state: present
 
 - name: enable lxc and libvirt on systemd
   systemd:
@@ -78,7 +73,7 @@
   package:
     name:
       - bash-completion
-    state: latest
+    state: present
 
 - name: set up some bash completion - copy template in
   template:
