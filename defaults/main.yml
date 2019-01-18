@@ -1,2 +1,4 @@
 ---
 copr_repository: thm/lxc2.0
+
+lxc_sudo_user: not_set

@@ -80,5 +80,10 @@
     src: lxcBashCompletion.inc.bash
     dest: /etc/bash_completion.d/lxcBashCompletion.inc.bash
 
-
+- name: allow LXC sudo user to run commands without pass
+  lineinfile:
+    path: /etc/sudoers.d/lxc-commands
+    line: "{{lxc_sudo_user}} ALL=(ALL) NOPASSWD:/usr/bin/lxc-*"
+    create: yes
+  when: lxc_sudo_user != 'not_set'
 
