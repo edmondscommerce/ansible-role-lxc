@@ -36,23 +36,6 @@
     src: default.conf
     dest: /etc/lxc/default.conf
 
-#- name: install squid for yum caching
-#  package:
-#    name: squid
-#    state: present
-#
-#- name: set up squid filesystem cache
-#  shell: >
-#    echo "cache_dir ufs /var/spool/squid 7000 16 256" >> /etc/squid/squid.conf;
-#  args:
-#    executable: /bin/bash
-#
-#- name: start and enable squid
-#  systemd:
-#    name: squid
-#    state: started
-#    enabled: yes
-
 - name: create LXC containers in inventory
   lxc_container:
     name: "{{ item }}"
@@ -60,13 +43,8 @@
     state: started
     backing_store: dir
     fs_size: 4G
+    container_config: "{{ lxc_container_config }}"
     template_options: --dist centos --release 7 --arch amd64
-    #configuring yum to use the squid proxy on the container host
-#    container_command: |
-#      echo "proxy=http://$(ip r | grep default | cut -d ' ' -f 3 | xargs):3128" >> /etc/yum.conf;
-#      sed -i 's/^mirror/#mirror/g' /etc/yum.repos.d/CentOS-Base.repo;
-#      sed -i 's/^#base/base/g' /etc/yum.repos.d/CentOS-Base.repo;
-
   with_items: "{{ groups['lxc'] }}"
 
 - name: set up some bash completion - ensure package is installed
