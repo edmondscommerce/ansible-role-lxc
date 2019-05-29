@@ -36,6 +36,17 @@
     src: default.conf
     dest: /etc/lxc/default.conf
 
+- name: register list of containers
+  shell: \lxc-ls --line
+  register: installed_containers
+
+- name: remove containers not listed in the group
+  lxc_container:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ installed_containers.stdout_lines }}"
+  when: item not in groups['lxc']
+
 - name: create LXC containers in inventory
   lxc_container:
     name: "{{ item }}"
